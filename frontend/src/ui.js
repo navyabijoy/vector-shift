@@ -9,6 +9,7 @@ import { shallow } from 'zustand/shallow';
 import { nodeTypes, getNodeDefaults } from './nodes';
 
 import 'reactflow/dist/style.css';
+import './ui.css';
 
 const gridSize = 20;
 const proOptions = { hideAttribution: true };
@@ -83,8 +84,7 @@ export const PipelineUI = () => {
     }, []);
 
     return (
-        <>
-        <div ref={reactFlowWrapper} style={{width: '100vw', height: '70vh'}}>
+        <div ref={reactFlowWrapper} className="canvas">
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -98,12 +98,16 @@ export const PipelineUI = () => {
                 proOptions={proOptions}
                 snapGrid={[gridSize, gridSize]}
                 connectionLineType='smoothstep'
+                defaultEdgeOptions={{ style: { stroke: 'var(--color-primary)', strokeWidth: 2 } }}
             >
-                <Background color="#aaa" gap={gridSize} />
+                <Background color="#c7cbd4" gap={gridSize} />
                 <Controls />
-                <MiniMap />
+                <MiniMap
+                    nodeColor="#c7d2fe"
+                    maskColor="rgba(244, 245, 248, 0.7)"
+                    style={{ border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)' }}
+                />
             </ReactFlow>
         </div>
-        </>
     )
 }

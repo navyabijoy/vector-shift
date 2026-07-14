@@ -1,0 +1,22 @@
+/* App.css — top-level page layout: toolbar header, canvas fills the rest, footer bar. */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app__canvas {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+.app__footer {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+}

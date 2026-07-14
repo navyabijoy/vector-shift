@@ -1,34 +1,23 @@
 // draggableNode.js
 
-export const DraggableNode = ({ type, label, icon }) => {
+export const DraggableNode = ({ type, label, icon, category }) => {
     const onDragStart = (event, nodeType) => {
       const appData = { nodeType }
       event.target.style.cursor = 'grabbing';
       event.dataTransfer.setData('application/reactflow', JSON.stringify(appData));
       event.dataTransfer.effectAllowed = 'move';
     };
-  
+
     return (
       <div
-        className={type}
+        className="draggable-node"
+        data-category={category ?? 'core'}
         onDragStart={(event) => onDragStart(event, type)}
         onDragEnd={(event) => (event.target.style.cursor = 'grab')}
-        style={{ 
-          cursor: 'grab', 
-          minWidth: '80px', 
-          height: '60px',
-          display: 'flex', 
-          alignItems: 'center', 
-          borderRadius: '8px',
-          backgroundColor: '#1C2536',
-          justifyContent: 'center', 
-          flexDirection: 'column'
-        }} 
         draggable
       >
-          {icon ? <span style={{ color: '#fff' }}>{icon}</span> : null}
-          <span style={{ color: '#fff' }}>{label}</span>
+        {icon ? <span className="draggable-node__icon">{icon}</span> : null}
+        <span className="draggable-node__label">{label}</span>
       </div>
     );
   };
-  

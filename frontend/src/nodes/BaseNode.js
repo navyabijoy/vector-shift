@@ -37,7 +37,7 @@ export const BaseNode = ({ id, data, config }) => {
   const groups = groupByPosition(resolved);
 
   return (
-    <div className="node" data-node-type={config.type}>
+    <div className="node" data-node-type={config.type} data-category={config.category ?? 'core'}>
       <header className="node__header">
         {icon ? <span className="node__icon">{icon}</span> : null}
         <span className="node__title">{title}</span>
@@ -72,7 +72,7 @@ export const BaseNode = ({ id, data, config }) => {
               type={handle.type}
               position={POSITIONS[position]}
               id={`${id}-${handle.id}`}
-              className="node__handle"
+              className={`node__handle node__handle--${handle.type}`}
               style={along}
             />
           );

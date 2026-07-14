@@ -1,0 +1,96 @@
+/* toolbar.css */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.toolbar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.toolbar__logo {
+  color: var(--color-primary);
+  font-size: 18px;
+}
+
+.toolbar__title {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--color-text);
+}
+
+.toolbar__palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.draggable-node {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  min-width: 84px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  cursor: grab;
+  user-select: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.draggable-node:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.draggable-node:active {
+  cursor: grabbing;
+  transform: translateY(0);
+}
+
+.draggable-node__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.draggable-node[data-category='io'] .draggable-node__icon {
+  background: var(--cat-io-soft);
+  color: var(--cat-io);
+}
+.draggable-node[data-category='ai'] .draggable-node__icon {
+  background: var(--cat-ai-soft);
+  color: var(--cat-ai);
+}
+.draggable-node[data-category='logic'] .draggable-node__icon {
+  background: var(--cat-logic-soft);
+  color: var(--cat-logic);
+}
+.draggable-node[data-category='core'] .draggable-node__icon {
+  background: var(--cat-core-soft);
+  color: var(--cat-core);
+}
+
+.draggable-node__label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+}

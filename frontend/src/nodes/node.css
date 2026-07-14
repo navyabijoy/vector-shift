@@ -1,41 +1,90 @@
-/* node.css
-   Baseline styling for the node shell. Intentionally plain — Part 2 replaces
-   this with the real design system. It exists so that every node, present and
-   future, is styled from one place instead of via inline styles per file. */
+/* node.css — the shared visual language for every node, whatever its config. */
 
 .node {
   position: relative;
-  width: 220px;
-  background: #fff;
-  border: 1px solid #cbd2dc;
-  border-radius: 8px;
+  width: 240px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--cat-core);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
   font-size: 12px;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.node[data-category='io'] {
+  border-left-color: var(--cat-io);
+}
+.node[data-category='ai'] {
+  border-left-color: var(--cat-ai);
+}
+.node[data-category='logic'] {
+  border-left-color: var(--cat-logic);
+}
+.node[data-category='core'] {
+  border-left-color: var(--cat-core);
+}
+
+.react-flow__node.selected .node,
+.node:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-strong);
 }
 
 .node__header {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 10px;
-  border-bottom: 1px solid #e6e9ee;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.node__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-sm);
+  background: var(--cat-core-soft);
+  color: var(--cat-core);
+  font-size: 12px;
+}
+
+.node[data-category='io'] .node__icon {
+  background: var(--cat-io-soft);
+  color: var(--cat-io);
+}
+.node[data-category='ai'] .node__icon {
+  background: var(--cat-ai-soft);
+  color: var(--cat-ai);
+}
+.node[data-category='logic'] .node__icon {
+  background: var(--cat-logic-soft);
+  color: var(--cat-logic);
+}
+
+.node__title {
   font-weight: 600;
+  color: var(--color-text);
 }
 
 .node__body {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 10px;
+  gap: var(--space-3);
+  padding: var(--space-3);
 }
 
 .node__description {
   margin: 0;
-  color: #5b6472;
+  color: var(--color-text-muted);
+  line-height: 1.4;
 }
 
 .node__hint {
   margin: 0;
-  color: #8a93a2;
+  color: var(--color-text-faint);
   font-size: 11px;
   text-align: right;
 }
@@ -43,43 +92,68 @@
 .node__field {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 
 .node__label {
-  color: #5b6472;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .node__input {
   width: 100%;
   box-sizing: border-box;
-  padding: 5px 7px;
-  border: 1px solid #cbd2dc;
-  border-radius: 5px;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
   font: inherit;
+  resize: vertical;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.node__input:hover {
+  border-color: var(--color-text-faint);
 }
 
 .node__input:focus {
-  outline: 2px solid #6366f1;
-  outline-offset: -1px;
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
 }
 
 .node__checkbox {
   width: auto;
+  accent-color: var(--color-primary);
 }
 
 .node__handle {
-  width: 9px;
-  height: 9px;
-  background: #6366f1;
-  border: 1px solid #fff;
+  width: 10px;
+  height: 10px;
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary);
+  transition: transform 0.1s ease;
+}
+
+.node__handle--source {
+  border-color: var(--color-primary);
+}
+
+.node__handle--target {
+  border-color: var(--color-text-faint);
+}
+
+.node__handle:hover {
+  transform: scale(1.2);
 }
 
 /* Labels sit beside their handle, outside the node, and must not eat its clicks. */
 .node__handle-label {
   position: absolute;
   transform: translateY(-50%);
-  color: #8a93a2;
+  color: var(--color-text-faint);
   font-size: 10px;
   white-space: nowrap;
   pointer-events: none;
