@@ -11,6 +11,7 @@ import {
 export const useStore = create((set, get) => ({
     nodes: [],
     edges: [],
+    nodeIDs: {},
     getNodeID: (type) => {
         const newIDs = {...get().nodeIDs};
         if (newIDs[type] === undefined) {
@@ -42,13 +43,14 @@ export const useStore = create((set, get) => ({
     },
     updateNodeField: (nodeId, fieldName, fieldValue) => {
       set({
-        nodes: get().nodes.map((node) => {
-          if (node.id === nodeId) {
-            node.data = { ...node.data, [fieldName]: fieldValue };
-          }
-  
-          return node;
-        }),
+        // Return a new node object rather than mutating node.data in place.
+        // React Flow memoizes on node identity, so an in-place edit can leave
+        // the canvas showing a stale value.
+        nodes: get().nodes.map((node) =>
+          node.id === nodeId
+            ? { ...node, data: { ...node.data, [fieldName]: fieldValue } }
+            : node
+        ),
       });
     },
   }));
