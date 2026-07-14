@@ -3,6 +3,7 @@
 // icon, handles and fields; this component turns that into markup, spaces the
 // handles, and writes field edits back to the store.
 
+import { useEffect } from 'react';
 import { Handle, Position } from 'reactflow';
 import { useStore } from '../store';
 import { NodeField } from './NodeField';
@@ -13,6 +14,17 @@ const POSITIONS = {
   right: Position.Right,
   top: Position.Top,
   bottom: Position.Bottom,
+};
+
+const MIN_NODE_WIDTH = 240;
+const MAX_NODE_WIDTH = 480;
+const CHAR_WIDTH_PX = 7;
+const WIDTH_CHROME_PX = 48; // border + body/input padding
+
+// Widens a node to fit its longest line, clamped to a sane range.
+const autoWidthFor = (text) => {
+  const longestLine = (text || '').split('\n').reduce((max, line) => Math.max(max, line.length), 0);
+  return Math.min(MAX_NODE_WIDTH, Math.max(MIN_NODE_WIDTH, WIDTH_CHROME_PX + longestLine * CHAR_WIDTH_PX));
 };
 
 // Spread n handles evenly along one edge: 1 sits at 50%, 2 at 33%/67%, and so on.
@@ -28,16 +40,33 @@ const groupByPosition = (handles) =>
 
 export const BaseNode = ({ id, data, config }) => {
   const updateNodeField = useStore((state) => state.updateNodeField);
+  const pruneEdgesForNode = useStore((state) => state.pruneEdgesForNode);
 
-  const { title, icon, description, fields = [], handles = [], render } = config;
+  const { title, icon, description, fields = [], handles = [], render, autoSize } = config;
 
   // Handles may be a function of the node's data, so a node can grow or lose
   // handles as the user edits it (the Text node's {{variables}} rely on this).
   const resolved = typeof handles === 'function' ? handles(data, id) : handles;
   const groups = groupByPosition(resolved);
+  const handleKey = resolved.map((handle) => handle.id).join('|');
+
+  // A handle that disappears (e.g. a {{variable}} gets deleted) can leave an
+  // edge wired to a handle id that no longer renders. Prune those whenever
+  // this node's resolved handle set changes.
+  useEffect(() => {
+    const validHandleIds = handleKey === '' ? [] : handleKey.split('|').map((handleId) => `${id}-${handleId}`);
+    pruneEdgesForNode(id, validHandleIds);
+  }, [id, handleKey, pruneEdgesForNode]);
+
+  const autoWidth = autoSize ? autoWidthFor(data?.[autoSize]) : undefined;
 
   return (
-    <div className="node" data-node-type={config.type} data-category={config.category ?? 'core'}>
+    <div
+      className="node"
+      data-node-type={config.type}
+      data-category={config.category ?? 'core'}
+      style={autoWidth ? { width: autoWidth } : undefined}
+    >
       <header className="node__header">
         {icon ? <span className="node__icon">{icon}</span> : null}
         <span className="node__title">{title}</span>

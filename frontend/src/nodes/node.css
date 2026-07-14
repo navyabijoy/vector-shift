@@ -124,6 +124,12 @@
   box-shadow: 0 0 0 3px var(--color-primary-soft);
 }
 
+.node__input--autosize {
+  resize: none;
+  overflow: hidden;
+  min-height: 32px;
+}
+
 .node__checkbox {
   width: auto;
   accent-color: var(--color-primary);

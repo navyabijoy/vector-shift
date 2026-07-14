@@ -2,7 +2,32 @@
 // Renders one field of a node from its config descriptor. Adding a new input
 // type means adding a case here; every node then gets it for free.
 
+import { useEffect, useRef } from 'react';
+
 const stopPropagation = (e) => e.stopPropagation();
+
+// Grows to fit its content instead of scrolling. The node card has no fixed
+// height, so a taller textarea is enough to grow the whole node vertically.
+const AutosizeTextarea = ({ className, placeholder, ...rest }) => {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight}px`;
+  }, [rest.value]);
+
+  return (
+    <textarea
+      {...rest}
+      ref={ref}
+      rows={1}
+      placeholder={placeholder}
+      className={`${className} node__input--autosize`}
+    />
+  );
+};
 
 export const NodeField = ({ id, field, value, onChange }) => {
   const { name, label, type = 'text', options = [], placeholder, min, max } = field;
@@ -39,6 +64,10 @@ export const NodeField = ({ id, field, value, onChange }) => {
 
     case 'textarea':
       control = <textarea {...shared} rows={3} placeholder={placeholder} />;
+      break;
+
+    case 'autosize-textarea':
+      control = <AutosizeTextarea {...shared} placeholder={placeholder} />;
       break;
 
     case 'number':

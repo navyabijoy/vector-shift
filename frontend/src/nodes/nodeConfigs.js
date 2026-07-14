@@ -9,6 +9,10 @@
 //   handles[]                   — { id, type: 'source'|'target', position, label }
 //                                 may also be a fn(data, id) => handles for dynamic ports
 //   render()                    — escape hatch for bespoke markup
+//   autoSize                    — name of a text field whose content should
+//                                 drive the node's width (BaseNode reads it)
+
+import { extractVariables } from './textVariables';
 
 export const NODE_CONFIGS = {
   customInput: {
@@ -54,8 +58,20 @@ export const NODE_CONFIGS = {
     title: 'Text',
     icon: '¶',
     category: 'core',
-    fields: [{ name: 'text', label: 'Text', type: 'textarea', default: '{{input}}' }],
-    handles: [{ id: 'output', type: 'source', position: 'right' }],
+    fields: [{ name: 'text', label: 'Text', type: 'autosize-textarea', default: '{{input}}' }],
+    autoSize: 'text',
+    // A target handle per unique {{variable}} in the text, plus the fixed
+    // output. Dynamic, same as Merge above — just driven by parsed text
+    // instead of a number field.
+    handles: (data) => [
+      ...extractVariables(data?.text).map((name) => ({
+        id: `field-${name}`,
+        type: 'target',
+        position: 'left',
+        label: name,
+      })),
+      { id: 'output', type: 'source', position: 'right' },
+    ],
   },
 
   // --- Five new nodes, demonstrating the abstraction rather than doing

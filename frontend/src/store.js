@@ -53,4 +53,20 @@ export const useStore = create((set, get) => ({
         ),
       });
     },
+    // Nodes whose handles depend on their own data (Text's {{variables}},
+    // Merge's input count) can lose a handle when the user edits them. Any
+    // edge still wired to that handle would otherwise dangle. `validHandleIds`
+    // is the full set of handle ids (`${nodeId}-${handleId}`) the node
+    // currently renders.
+    pruneEdgesForNode: (nodeId, validHandleIds) => {
+      const current = get().edges;
+      const next = current.filter((edge) => {
+        if (edge.source === nodeId && !validHandleIds.includes(edge.sourceHandle)) return false;
+        if (edge.target === nodeId && !validHandleIds.includes(edge.targetHandle)) return false;
+        return true;
+      });
+      if (next.length !== current.length) {
+        set({ edges: next });
+      }
+    },
   }));
