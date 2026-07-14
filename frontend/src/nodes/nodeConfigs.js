@@ -57,6 +57,109 @@ export const NODE_CONFIGS = {
     fields: [{ name: 'text', label: 'Text', type: 'textarea', default: '{{input}}' }],
     handles: [{ id: 'output', type: 'source', position: 'right' }],
   },
+
+  // --- Five new nodes, demonstrating the abstraction rather than doing
+  // anything elaborate. Each one exercises something the original four
+  // never needed: multiple field types, a checkbox, a dynamic handle count
+  // driven by a field, and the render() escape hatch.
+
+  math: {
+    type: 'math',
+    title: 'Math',
+    icon: '∑',
+    category: 'logic',
+    fields: [
+      {
+        name: 'operator',
+        label: 'Operator',
+        type: 'select',
+        options: [
+          { value: '+', label: 'Add' },
+          { value: '-', label: 'Subtract' },
+          { value: '*', label: 'Multiply' },
+          { value: '/', label: 'Divide' },
+        ],
+        default: '+',
+      },
+    ],
+    handles: [
+      { id: 'a', type: 'target', position: 'left', label: 'a' },
+      { id: 'b', type: 'target', position: 'left', label: 'b' },
+      { id: 'result', type: 'source', position: 'right', label: 'result' },
+    ],
+  },
+
+  filter: {
+    type: 'filter',
+    title: 'Filter',
+    icon: '⏚',
+    category: 'logic',
+    fields: [
+      {
+        name: 'condition',
+        label: 'Condition',
+        type: 'select',
+        options: ['contains', 'equals', 'greater than', 'less than'],
+        default: 'contains',
+      },
+      { name: 'value', label: 'Value', type: 'text', placeholder: 'comparison value', default: '' },
+    ],
+    handles: [
+      { id: 'input', type: 'target', position: 'left' },
+      { id: 'output', type: 'source', position: 'right' },
+    ],
+  },
+
+  apiRequest: {
+    type: 'apiRequest',
+    title: 'API Request',
+    icon: '⇄',
+    category: 'io',
+    fields: [
+      { name: 'url', label: 'URL', type: 'text', placeholder: 'https://api.example.com', default: '' },
+      { name: 'method', label: 'Method', type: 'select', options: ['GET', 'POST', 'PUT', 'DELETE'], default: 'GET' },
+      { name: 'async', label: 'Async', type: 'checkbox', default: false },
+    ],
+    handles: [
+      { id: 'trigger', type: 'target', position: 'left' },
+      { id: 'response', type: 'source', position: 'right' },
+    ],
+  },
+
+  merge: {
+    type: 'merge',
+    title: 'Merge',
+    icon: '⑃',
+    category: 'logic',
+    description: 'Combines multiple inputs into one. Handle count follows the field below.',
+    fields: [{ name: 'inputCount', label: 'Inputs', type: 'number', min: 2, max: 6, default: 2 }],
+    // The one config in this file where `handles` is a function: it reads
+    // the node's own data to decide how many target handles to render. This
+    // is the same mechanism Part 3 uses to grow a handle per {{variable}}.
+    handles: (data) => {
+      const count = Math.min(6, Math.max(2, Number(data?.inputCount) || 2));
+      const inputs = Array.from({ length: count }, (_, i) => ({
+        id: `input-${i}`,
+        type: 'target',
+        position: 'left',
+        label: `input ${i + 1}`,
+      }));
+      return [...inputs, { id: 'output', type: 'source', position: 'right' }];
+    },
+  },
+
+  note: {
+    type: 'note',
+    title: 'Note',
+    icon: '✎',
+    category: 'core',
+    description: 'A freeform annotation. No handles — it does not participate in the pipeline graph.',
+    fields: [{ name: 'text', label: 'Note', type: 'textarea', placeholder: 'Leave a note...', default: '' }],
+    handles: [],
+    // render() is the escape hatch for markup that isn't a stored field —
+    // here, a live character count derived from the note's own text.
+    render: ({ data }) => <p className="node__hint">{(data?.text || '').length} characters</p>,
+  },
 };
 
 // Seeds a new node's data with its configured defaults, so the values the user

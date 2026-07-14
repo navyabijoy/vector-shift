@@ -33,6 +33,13 @@
   color: #5b6472;
 }
 
+.node__hint {
+  margin: 0;
+  color: #8a93a2;
+  font-size: 11px;
+  text-align: right;
+}
+
 .node__field {
   display: flex;
   flex-direction: column;
