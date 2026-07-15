@@ -3,6 +3,7 @@
 
 import { DraggableNode } from './draggableNode';
 import { NODE_CONFIGS } from './nodes';
+import { GenerateButton } from './generate';
 import { useStore } from './store';
 import './toolbar.css';
 
@@ -15,6 +16,7 @@ export const PipelineToolbar = () => {
             <div className="toolbar__brand">
                 <span className="toolbar__logo">◆</span>
                 <span className="toolbar__title">Pipeline Builder</span>
+                <GenerateButton variant="ghost" />
                 {nodeCount > 0 && (
                     <button
                         type="button"

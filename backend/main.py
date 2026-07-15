@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict
 
 import engine
+import generate
 
 app = FastAPI(title='VectorShift Pipeline API')
 
@@ -123,6 +124,23 @@ def _run(nodes: list[Node], edges: list[Edge], inputs: dict) -> dict:
 @app.post('/pipelines/run')
 def run_pipeline(request: RunRequest) -> dict:
     return _run(request.nodes, request.edges, request.inputs)
+
+
+# --- Generate: build a pipeline from a natural-language prompt ----------------
+# Describe what you want; the LLM drafts the graph and we expand it into real
+# nodes/edges. The canvas loads it, still fully editable by hand.
+
+
+class GenerateRequest(BaseModel):
+    prompt: str
+
+
+@app.post('/pipelines/generate')
+def generate_pipeline(request: GenerateRequest) -> dict:
+    try:
+        return generate.generate_pipeline(request.prompt)
+    except Exception as err:  # noqa: BLE001 — surface a clean 400, don't 500
+        raise HTTPException(status_code=400, detail=str(err))
 
 
 # --- Deploy: a saved pipeline becomes a callable endpoint --------------------

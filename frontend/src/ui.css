@@ -50,6 +50,21 @@
   color: var(--color-text-muted);
 }
 
+.empty__generate {
+  pointer-events: auto;
+  margin-bottom: var(--space-4);
+}
+
+.empty__or {
+  pointer-events: none;
+  margin-bottom: var(--space-3);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-faint);
+}
+
 .empty__cards {
   display: flex;
   gap: var(--space-3);

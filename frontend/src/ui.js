@@ -8,6 +8,7 @@ import { useStore } from './store';
 import { shallow } from 'zustand/shallow';
 import { nodeTypes, getNodeDefaults } from './nodes';
 import { TEMPLATES } from './templates';
+import { GenerateButton } from './generate';
 import { cycleEdgeIds } from './graph';
 
 import 'reactflow/dist/style.css';
@@ -27,11 +28,16 @@ const selector = (state) => ({
   onConnect: state.onConnect,
 });
 
-// Templates shown on an empty canvas — a working example beats a blank page.
+// An empty canvas offers three ways in: describe it, start from a template, or
+// drag nodes by hand.
 const EmptyState = ({ onPick }) => (
   <div className="empty">
-    <h2 className="empty__title">Start from a template</h2>
-    <p className="empty__subtitle">Or drag a node from the left to build your own.</p>
+    <h2 className="empty__title">Build a pipeline</h2>
+    <p className="empty__subtitle">Describe what you want, start from a template, or drag nodes from the left.</p>
+    <div className="empty__generate">
+      <GenerateButton variant="primary" label="✨ Build from a prompt" />
+    </div>
+    <div className="empty__or">or pick a template</div>
     <div className="empty__cards">
       {TEMPLATES.map((template) => (
         <button

@@ -75,6 +75,43 @@ def _as_number(value):
         return 0.0
 
 
+def chat_completion(messages, max_tokens=1024, timeout=30, temperature=None) -> str:
+    """Low-level OpenRouter call. Raises on failure — callers decide how to
+    degrade. Shared by the LLM node (below) and the pipeline generator.
+    """
+    api_key = os.environ.get('OPENROUTER_API_KEY')
+    if not api_key:
+        raise RuntimeError('OPENROUTER_API_KEY is not set')
+
+    model = os.environ.get('OPENROUTER_MODEL', DEFAULT_MODEL)
+    payload = {'model': model, 'messages': messages, 'max_tokens': max_tokens}
+    if temperature is not None:
+        payload['temperature'] = temperature
+    body = json.dumps(payload).encode('utf-8')
+    req = urllib.request.Request(
+        OPENROUTER_URL,
+        data=body,
+        method='POST',
+        headers={
+            'Authorization': f'Bearer {api_key}',
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'http://localhost:3000',
+            'X-Title': 'VectorShift Pipeline',
+        },
+    )
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        data = json.loads(resp.read().decode('utf-8'))
+
+    if isinstance(data.get('error'), dict):
+        raise RuntimeError(data['error'].get('message', 'OpenRouter error'))
+    choices = data.get('choices') or []
+    if not choices:
+        raise RuntimeError('OpenRouter returned no choices')
+    message = choices[0].get('message') or {}
+    # Some models leave `content` null and put text in `reasoning`; tolerate both.
+    return message.get('content') or message.get('reasoning') or ''
+
+
 def _call_llm(system: str, prompt: str) -> str:
     """One real OpenRouter call, with a safe fallback.
 
@@ -86,32 +123,16 @@ def _call_llm(system: str, prompt: str) -> str:
     if not prompt:
         return '(LLM node: no prompt connected)'
 
-    api_key = os.environ.get('OPENROUTER_API_KEY')
-    if not api_key:
+    if not os.environ.get('OPENROUTER_API_KEY'):
         return _stub_llm(prompt)
 
-    model = os.environ.get('OPENROUTER_MODEL', DEFAULT_MODEL)
     messages = []
     if (system or '').strip():
         messages.append({'role': 'system', 'content': system.strip()})
     messages.append({'role': 'user', 'content': prompt})
 
     try:
-        body = json.dumps({'model': model, 'messages': messages, 'max_tokens': 1024}).encode('utf-8')
-        req = urllib.request.Request(
-            OPENROUTER_URL,
-            data=body,
-            method='POST',
-            headers={
-                'Authorization': f'Bearer {api_key}',
-                'Content-Type': 'application/json',
-                'HTTP-Referer': 'http://localhost:3000',
-                'X-Title': 'VectorShift Pipeline',
-            },
-        )
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            data = json.loads(resp.read().decode('utf-8'))
-        return data['choices'][0]['message']['content'].strip()
+        return chat_completion(messages).strip()
     except Exception as err:  # noqa: BLE001 — a live run must never crash on the model
         return f'{_stub_llm(prompt)}\n\n(live call unavailable: {err})'
 
