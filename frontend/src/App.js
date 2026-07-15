@@ -1,6 +1,7 @@
 import { PipelineToolbar } from './toolbar';
 import { PipelineUI } from './ui';
 import { SubmitButton } from './submit';
+import { RunPanel } from './run';
 import './App.css';
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
         <PipelineUI />
       </main>
       <footer className="app__footer">
+        <RunPanel />
         <SubmitButton />
       </footer>
     </div>
