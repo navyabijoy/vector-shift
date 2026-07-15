@@ -2,11 +2,13 @@
 // Displays the drag-and-drop UI
 // --------------------------------------------------
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import ReactFlow, { Controls, Background, MiniMap } from 'reactflow';
 import { useStore } from './store';
 import { shallow } from 'zustand/shallow';
 import { nodeTypes, getNodeDefaults } from './nodes';
+import { TEMPLATES } from './templates';
+import { cycleEdgeIds } from './graph';
 
 import 'reactflow/dist/style.css';
 import './ui.css';
@@ -19,10 +21,32 @@ const selector = (state) => ({
   edges: state.edges,
   getNodeID: state.getNodeID,
   addNode: state.addNode,
+  loadPipeline: state.loadPipeline,
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
 });
+
+// Templates shown on an empty canvas — a working example beats a blank page.
+const EmptyState = ({ onPick }) => (
+  <div className="empty">
+    <h2 className="empty__title">Start from a template</h2>
+    <p className="empty__subtitle">Or drag a node from the left to build your own.</p>
+    <div className="empty__cards">
+      {TEMPLATES.map((template) => (
+        <button
+          key={template.key}
+          type="button"
+          className="empty__card"
+          onClick={() => onPick(template)}
+        >
+          <span className="empty__card-title">{template.title}</span>
+          <span className="empty__card-desc">{template.description}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+);
 
 export const PipelineUI = () => {
     const reactFlowWrapper = useRef(null);
@@ -32,6 +56,7 @@ export const PipelineUI = () => {
       edges,
       getNodeID,
       addNode,
+      loadPipeline,
       onNodesChange,
       onEdgesChange,
       onConnect
@@ -48,17 +73,17 @@ export const PipelineUI = () => {
     const onDrop = useCallback(
         (event) => {
           event.preventDefault();
-    
+
           const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
           if (event?.dataTransfer?.getData('application/reactflow')) {
             const appData = JSON.parse(event.dataTransfer.getData('application/reactflow'));
             const type = appData?.nodeType;
-      
+
             // check if the dropped element is valid
             if (typeof type === 'undefined' || !type) {
               return;
             }
-      
+
             const position = reactFlowInstance.project({
               x: event.clientX - reactFlowBounds.left,
               y: event.clientY - reactFlowBounds.top,
@@ -71,7 +96,7 @@ export const PipelineUI = () => {
               position,
               data: getInitNodeData(nodeID, type),
             };
-      
+
             addNode(newNode);
           }
         },
@@ -83,14 +108,69 @@ export const PipelineUI = () => {
         event.dataTransfer.dropEffect = 'move';
     }, []);
 
+    // Connection validation (draw-time): reject connections that can never be a
+    // valid pipeline, so whole classes of mistakes never make it onto the canvas.
+    const isValidConnection = useCallback(
+      (connection) => {
+        // A node can't feed itself.
+        if (connection.source === connection.target) return false;
+        // No duplicate wire between the same two handles.
+        const duplicate = edges.some(
+          (edge) =>
+            edge.source === connection.source &&
+            edge.target === connection.target &&
+            edge.sourceHandle === connection.sourceHandle &&
+            edge.targetHandle === connection.targetHandle
+        );
+        if (duplicate) return false;
+        // Type-aware: a File input can't feed a text-consuming node.
+        const source = nodes.find((node) => node.id === connection.source);
+        const target = nodes.find((node) => node.id === connection.target);
+        if (
+          source?.type === 'customInput' &&
+          source.data?.inputType === 'File' &&
+          (target?.type === 'text' || target?.type === 'llm')
+        ) {
+          return false;
+        }
+        return true;
+      },
+      [nodes, edges]
+    );
+
+    // Cycle highlighting: paint the offending edges red the instant a cycle
+    // forms. The run engine also refuses a cyclic graph, but seeing it beats
+    // reading it.
+    const cycleIds = useMemo(() => cycleEdgeIds(nodes, edges), [nodes, edges]);
+    const hasCycle = cycleIds.size > 0;
+    const displayEdges = useMemo(
+      () =>
+        edges.map((edge) =>
+          cycleIds.has(edge.id)
+            ? {
+                ...edge,
+                animated: true,
+                style: { stroke: 'var(--color-danger)', strokeWidth: 2.5 },
+              }
+            : edge
+        ),
+      [edges, cycleIds]
+    );
+
     return (
         <div ref={reactFlowWrapper} className="canvas">
+            {hasCycle && (
+              <div className="canvas__banner" role="status">
+                This pipeline has a cycle — remove the red edge(s) before running.
+              </div>
+            )}
             <ReactFlow
                 nodes={nodes}
-                edges={edges}
+                edges={displayEdges}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
+                isValidConnection={isValidConnection}
                 onDrop={onDrop}
                 onDragOver={onDragOver}
                 onInit={setReactFlowInstance}
@@ -108,6 +188,9 @@ export const PipelineUI = () => {
                     style={{ border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)' }}
                 />
             </ReactFlow>
+            {nodes.length === 0 && (
+              <EmptyState onPick={(template) => { const { nodes: n, edges: e } = template.build(); loadPipeline(n, e); }} />
+            )}
         </div>
     )
 }

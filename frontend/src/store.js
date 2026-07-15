@@ -1,6 +1,7 @@
 // store.js
 
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import {
     addEdge,
     applyNodeChanges,
@@ -8,7 +9,8 @@ import {
     MarkerType,
   } from 'reactflow';
 
-export const useStore = create((set, get) => ({
+export const useStore = create(persist(
+  (set, get) => ({
     nodes: [],
     edges: [],
     nodeIDs: {},
@@ -26,6 +28,21 @@ export const useStore = create((set, get) => ({
             nodes: [...get().nodes, node]
         });
     },
+    // Replace the whole canvas with a prebuilt pipeline (a template). The ID
+    // counters are seeded from the template's node ids so newly added nodes
+    // can't collide with the ones the template brought in.
+    loadPipeline: (nodes, edges) => {
+        const nodeIDs = {};
+        nodes.forEach((node) => {
+            const match = /^(.*)-(\d+)$/.exec(node.id);
+            if (match) {
+                const [, type, num] = match;
+                nodeIDs[type] = Math.max(nodeIDs[type] || 0, Number(num));
+            }
+        });
+        set({ nodes, edges, nodeIDs });
+    },
+    clearPipeline: () => set({ nodes: [], edges: [], nodeIDs: {} }),
     onNodesChange: (changes) => {
       set({
         nodes: applyNodeChanges(changes, get().nodes),
@@ -69,4 +86,15 @@ export const useStore = create((set, get) => ({
         set({ edges: next });
       }
     },
-  }));
+  }),
+  {
+    // Persist the graph so a refresh doesn't nuke the user's work. Only the
+    // data is stored — the action functions are rebuilt on load.
+    name: 'vectorshift-pipeline',
+    partialize: (state) => ({
+      nodes: state.nodes,
+      edges: state.edges,
+      nodeIDs: state.nodeIDs,
+    }),
+  }
+));

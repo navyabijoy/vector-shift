@@ -17,6 +17,24 @@
   flex-shrink: 0;
 }
 
+.toolbar__clear {
+  margin-left: var(--space-2);
+  padding: 2px var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.toolbar__clear:hover {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
 .toolbar__logo {
   color: var(--color-primary);
   font-size: 18px;
