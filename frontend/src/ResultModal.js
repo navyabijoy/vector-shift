@@ -64,7 +64,7 @@ export const ResultModal = ({ result, error, onClose }) => {
           </>
         )}
 
-        <button type="button" className="modal__close" onClick={onClose} autoFocus>
+        <button type="button" className="btn btn--secondary modal__close" onClick={onClose} autoFocus>
           Close
         </button>
       </div>

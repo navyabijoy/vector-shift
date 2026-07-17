@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { shallow } from 'zustand/shallow';
 import { useStore } from './store';
 import { ResultModal } from './ResultModal';
-import './submit.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
@@ -64,11 +63,11 @@ export const SubmitButton = () => {
         <>
             <button
                 type="submit"
-                className="submit-button"
+                className="btn btn--secondary"
                 onClick={handleSubmit}
                 disabled={isSubmitting}
             >
-                {isSubmitting ? 'Submitting…' : 'Submit Pipeline'}
+                {isSubmitting ? 'Submitting…' : 'Submit'}
             </button>
 
             {(result || error) && <ResultModal result={result} error={error} onClose={dismiss} />}

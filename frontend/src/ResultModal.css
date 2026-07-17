@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(15, 23, 42, 0.45);
+  background: var(--color-scrim);
   animation: modal-fade 0.15s ease;
 }
 
@@ -37,7 +37,7 @@
 }
 
 .modal__icon--ok {
-  background: #e8f7ee;
+  background: var(--color-success-soft);
   color: var(--color-success);
 }
 
@@ -105,37 +105,18 @@
 }
 
 .modal__verdict--ok {
-  background: #e8f7ee;
-  color: #14532d;
+  background: var(--color-success-soft);
+  color: #14532d; /* green-900 — the only value dark enough on green-50 */
 }
 
 .modal__verdict--warn {
   background: var(--cat-logic-soft);
-  color: #7c2d12;
+  color: #78350f; /* amber-900 — ditto on amber-100 */
 }
 
 .modal__close {
   width: 100%;
-  padding: var(--space-2) var(--space-4);
   margin-top: var(--space-1);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  color: var(--color-text);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
-}
-
-.modal__close:hover {
-  background: var(--color-bg);
-  border-color: var(--color-text-faint);
-}
-
-.modal__close:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
 }
 
 @keyframes modal-fade {

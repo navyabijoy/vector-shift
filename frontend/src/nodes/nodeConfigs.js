@@ -4,6 +4,9 @@
 //
 // A config supports:
 //   title / icon / description  — header and body chrome
+//   blurb                       — 2-4 words, what the node is for. Shown under
+//                                 its name in the palette, so keep it short
+//                                 enough not to wrap past two lines there.
 //   fields[]                    — { name, label, type, options, default, placeholder }
 //                                 `default` may be a value or a fn(id) => value
 //   handles[]                   — { id, type: 'source'|'target', position, label }
@@ -20,6 +23,7 @@ export const NODE_CONFIGS = {
     title: 'Input',
     icon: '↘',
     category: 'io',
+    blurb: 'Pipeline entry point',
     fields: [
       { name: 'inputName', label: 'Name', type: 'text', default: (id) => id.replace('customInput-', 'input_') },
       { name: 'inputType', label: 'Type', type: 'select', options: ['Text', 'File'], default: 'Text' },
@@ -32,6 +36,7 @@ export const NODE_CONFIGS = {
     title: 'Output',
     icon: '↗',
     category: 'io',
+    blurb: 'Captures the result',
     fields: [
       { name: 'outputName', label: 'Name', type: 'text', default: (id) => id.replace('customOutput-', 'output_') },
       { name: 'outputType', label: 'Type', type: 'select', options: ['Text', 'Image'], default: 'Text' },
@@ -44,6 +49,7 @@ export const NODE_CONFIGS = {
     title: 'LLM',
     icon: '✦',
     category: 'ai',
+    blurb: 'Prompt a model',
     description: 'Runs a prompt through a language model.',
     handles: [
       // Note: no manual `top: 200/3 %` offsets — BaseNode spaces these itself.
@@ -58,6 +64,7 @@ export const NODE_CONFIGS = {
     title: 'Text',
     icon: '¶',
     category: 'core',
+    blurb: 'Prompt template',
     fields: [{ name: 'text', label: 'Text', type: 'autosize-textarea', default: '{{input}}' }],
     autoSize: 'text',
     // A target handle per unique {{variable}} in the text, plus the fixed
@@ -84,6 +91,7 @@ export const NODE_CONFIGS = {
     title: 'Math',
     icon: '∑',
     category: 'logic',
+    blurb: 'Basic arithmetic',
     fields: [
       {
         name: 'operator',
@@ -110,6 +118,7 @@ export const NODE_CONFIGS = {
     title: 'Filter',
     icon: '⏚',
     category: 'logic',
+    blurb: 'Keep or drop values',
     fields: [
       {
         name: 'condition',
@@ -131,6 +140,7 @@ export const NODE_CONFIGS = {
     title: 'API Request',
     icon: '⇄',
     category: 'io',
+    blurb: 'Call an external API',
     fields: [
       { name: 'url', label: 'URL', type: 'text', placeholder: 'https://api.example.com', default: '' },
       { name: 'method', label: 'Method', type: 'select', options: ['GET', 'POST', 'PUT', 'DELETE'], default: 'GET' },
@@ -147,6 +157,7 @@ export const NODE_CONFIGS = {
     title: 'Merge',
     icon: '⑃',
     category: 'logic',
+    blurb: 'Combine inputs',
     description: 'Combines multiple inputs into one. Handle count follows the field below.',
     fields: [{ name: 'inputCount', label: 'Inputs', type: 'number', min: 2, max: 6, default: 2 }],
     // The one config in this file where `handles` is a function: it reads
@@ -169,6 +180,7 @@ export const NODE_CONFIGS = {
     title: 'Note',
     icon: '✎',
     category: 'core',
+    blurb: 'Annotate the canvas',
     description: 'A freeform annotation. No handles — it does not participate in the pipeline graph.',
     fields: [{ name: 'text', label: 'Note', type: 'textarea', placeholder: 'Leave a note...', default: '' }],
     handles: [],

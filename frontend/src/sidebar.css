@@ -1,0 +1,164 @@
+/* sidebar.css — the node palette rail and its draggable chips. */
+
+.sidebar {
+  width: var(--sidebar-width);
+  /* Border-box so --sidebar-width is the rail's real width, padding included,
+     and min-width:0 so a long blurb ellipsizes rather than widening the rail. */
+  box-sizing: border-box;
+  min-width: 0;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  overflow-y: auto;
+}
+
+.sidebar__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar__heading {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.sidebar__hint {
+  margin: 0;
+  font-size: 11px;
+  color: var(--color-text-faint);
+}
+
+.sidebar__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sidebar__group-label {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-text-faint);
+}
+
+.sidebar__items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.draggable-node {
+  display: flex;
+  align-items: flex-start;
+  min-width: 0;
+  gap: var(--space-2);
+  padding: 6px var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: grab;
+  user-select: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.draggable-node:hover {
+  background: var(--color-bg);
+  border-color: var(--color-border);
+}
+
+.draggable-node:active {
+  cursor: grabbing;
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+}
+
+.draggable-node__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.draggable-node[data-category='io'] .draggable-node__icon {
+  background: var(--cat-io-soft);
+  color: var(--cat-io);
+}
+.draggable-node[data-category='ai'] .draggable-node__icon {
+  background: var(--cat-ai-soft);
+  color: var(--cat-ai);
+}
+.draggable-node[data-category='logic'] .draggable-node__icon {
+  background: var(--cat-logic-soft);
+  color: var(--cat-logic);
+}
+.draggable-node[data-category='core'] .draggable-node__icon {
+  background: var(--cat-core-soft);
+  color: var(--cat-core);
+}
+
+/* Name over blurb, sharing the row's remaining width. min-width:0 lets the
+   blurb ellipsize instead of forcing the rail wider. */
+.draggable-node__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.draggable-node__label {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.draggable-node__blurb {
+  font-size: 10px;
+  line-height: 1.3;
+  color: var(--color-text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The rail costs too much width on a narrow screen; go horizontal instead.
+   Blurbs go with it — as a row of chips there's no room for a second line. */
+@media (max-width: 720px) {
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    gap: var(--space-4);
+    overflow-x: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .sidebar__intro,
+  .draggable-node__blurb {
+    display: none;
+  }
+
+  .sidebar__items {
+    flex-direction: row;
+  }
+
+  .draggable-node {
+    align-items: center;
+  }
+}

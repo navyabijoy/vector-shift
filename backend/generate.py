@@ -220,9 +220,6 @@ def _expand(spec: dict) -> dict:
             'target': tgt,
             'sourceHandle': f'{src}-{src_handle}',
             'targetHandle': f'{tgt}-{tgt_handle}',
-            'type': 'smoothstep',
-            'animated': True,
-            'markerEnd': {'type': 'arrow', 'height': '20px', 'width': '20px'},
         })
 
     # Repair: a text node must actually contain every {{variable}} an edge feeds,
@@ -258,9 +255,6 @@ def _expand(spec: dict) -> dict:
             'target': out_id,
             'sourceHandle': f'{src}-{src_handle}',
             'targetHandle': f'{out_id}-value',
-            'type': 'smoothstep',
-            'animated': True,
-            'markerEnd': {'type': 'arrow', 'height': '20px', 'width': '20px'},
         })
 
     # A merge node's handle count follows its wired inputs.

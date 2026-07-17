@@ -6,7 +6,6 @@ import {
     addEdge,
     applyNodeChanges,
     applyEdgeChanges,
-    MarkerType,
   } from 'reactflow';
 
 export const useStore = create(persist(
@@ -53,9 +52,10 @@ export const useStore = create(persist(
         edges: applyEdgeChanges(changes, get().edges),
       });
     },
+    // Topology only — ui.js styles every edge on render, whatever made it.
     onConnect: (connection) => {
       set({
-        edges: addEdge({...connection, type: 'smoothstep', animated: true, markerEnd: {type: MarkerType.Arrow, height: '20px', width: '20px'}}, get().edges),
+        edges: addEdge(connection, get().edges),
       });
     },
     updateNodeField: (nodeId, fieldName, fieldValue) => {

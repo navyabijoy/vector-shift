@@ -1,4 +1,4 @@
-/* App.css — top-level page layout: toolbar header, canvas fills the rest, footer bar. */
+/* App.css — the shell: header across the top, palette rail and canvas below it. */
 
 .app {
   display: flex;
@@ -7,17 +7,22 @@
   overflow: hidden;
 }
 
-.app__canvas {
+.app__body {
   flex: 1;
   min-height: 0;
-  position: relative;
+  display: flex;
 }
 
-.app__footer {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-5);
-  background: var(--color-surface);
-  border-top: 1px solid var(--color-border);
+.app__canvas {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+  background: var(--color-bg);
+}
+
+@media (max-width: 720px) {
+  .app__body {
+    flex-direction: column;
+  }
 }

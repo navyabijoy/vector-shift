@@ -116,7 +116,7 @@ export const RunPanel = () => {
 
   return (
     <>
-      <button type="button" className="run-button" onClick={() => setOpen(true)}>
+      <button type="button" className="btn btn--primary" onClick={() => setOpen(true)}>
         Run ▷
       </button>
 
@@ -154,7 +154,7 @@ export const RunPanel = () => {
                     </label>
                   ))
                 )}
-                <button type="button" className="run__go" onClick={run} disabled={running}>
+                <button type="button" className="btn btn--primary run__go" onClick={run} disabled={running}>
                   {running ? 'Running…' : 'Run pipeline ▷'}
                 </button>
               </section>
@@ -212,7 +212,7 @@ export const RunPanel = () => {
                           Deployed. Call it from your own code, a script, or a cron:
                         </p>
                         <pre className="run__snippet">{snippet}</pre>
-                        <button type="button" className="run__copy" onClick={copySnippet}>
+                        <button type="button" className="btn btn--secondary" onClick={copySnippet}>
                           {copied ? 'Copied ✓' : 'Copy curl'}
                         </button>
                       </>
@@ -221,7 +221,7 @@ export const RunPanel = () => {
                         <p className="run__hint">
                           Turn this graph into a callable API endpoint.
                         </p>
-                        <button type="button" className="run__copy" onClick={deploy}>
+                        <button type="button" className="btn btn--secondary" onClick={deploy}>
                           Create API endpoint
                         </button>
                       </>

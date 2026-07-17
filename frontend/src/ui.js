@@ -3,7 +3,7 @@
 // --------------------------------------------------
 
 import { useState, useRef, useCallback, useMemo } from 'react';
-import ReactFlow, { Controls, Background, MiniMap } from 'reactflow';
+import ReactFlow, { Controls, Background, MiniMap, MarkerType } from 'reactflow';
 import { useStore } from './store';
 import { shallow } from 'zustand/shallow';
 import { nodeTypes, getNodeDefaults } from './nodes';
@@ -16,6 +16,27 @@ import './ui.css';
 
 const gridSize = 20;
 const proOptions = { hideAttribution: true };
+
+// How an edge looks is decided here and nowhere else. Its three authors — the
+// store's onConnect, a template, and the backend's generator — only decide
+// which nodes connect; presentation is applied at render, so a hand-drawn edge
+// and a generated one are always the same edge.
+const EDGE_BASE = {
+  type: 'smoothstep',
+  animated: false,
+  style: { stroke: 'var(--color-primary)', strokeWidth: 2 },
+  markerEnd: { type: MarkerType.ArrowClosed, width: 16, height: 16, color: 'var(--color-primary)' },
+};
+
+// Animation earns its keep here: it marks the edges trapping the graph in a
+// cycle, rather than being the resting state of every wire on the canvas.
+const EDGE_CYCLE = {
+  animated: true,
+  style: { stroke: 'var(--color-danger)', strokeWidth: 2.5 },
+  markerEnd: { type: MarkerType.ArrowClosed, width: 16, height: 16, color: 'var(--color-danger)' },
+};
+
+const connectionLineStyle = { stroke: 'var(--color-primary)', strokeWidth: 2 };
 
 const selector = (state) => ({
   nodes: state.nodes,
@@ -151,15 +172,11 @@ export const PipelineUI = () => {
     const hasCycle = cycleIds.size > 0;
     const displayEdges = useMemo(
       () =>
-        edges.map((edge) =>
-          cycleIds.has(edge.id)
-            ? {
-                ...edge,
-                animated: true,
-                style: { stroke: 'var(--color-danger)', strokeWidth: 2.5 },
-              }
-            : edge
-        ),
+        edges.map((edge) => ({
+          ...edge,
+          ...EDGE_BASE,
+          ...(cycleIds.has(edge.id) ? EDGE_CYCLE : null),
+        })),
       [edges, cycleIds]
     );
 
@@ -184,13 +201,13 @@ export const PipelineUI = () => {
                 proOptions={proOptions}
                 snapGrid={[gridSize, gridSize]}
                 connectionLineType='smoothstep'
-                defaultEdgeOptions={{ style: { stroke: 'var(--color-primary)', strokeWidth: 2 } }}
+                connectionLineStyle={connectionLineStyle}
             >
-                <Background color="#c7cbd4" gap={gridSize} />
+                <Background color="var(--color-canvas-dot)" gap={gridSize} />
                 <Controls />
                 <MiniMap
-                    nodeColor="#c7d2fe"
-                    maskColor="rgba(244, 245, 248, 0.7)"
+                    nodeColor="var(--color-minimap-node)"
+                    maskColor="var(--color-minimap-mask)"
                     style={{ border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)' }}
                 />
             </ReactFlow>

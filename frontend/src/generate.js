@@ -33,7 +33,14 @@ export const generatePipeline = async (prompt) => {
   return response.json();
 };
 
-// A trigger button plus its own modal. Drop it anywhere (toolbar, empty state).
+// How each placement wants the trigger to look: quiet in the header, hero on
+// the empty canvas.
+const TRIGGER_CLASS = {
+  ghost: 'btn btn--ghost',
+  primary: 'btn btn--primary btn--lg',
+};
+
+// A trigger button plus its own modal. Drop it anywhere (header, empty state).
 export const GenerateButton = ({ variant = 'ghost', label = '✨ Build from prompt' }) => {
   const loadPipeline = useStore((state) => state.loadPipeline);
   const nodeCount = useStore((state) => state.nodes.length);
@@ -68,7 +75,11 @@ export const GenerateButton = ({ variant = 'ghost', label = '✨ Build from prom
 
   return (
     <>
-      <button type="button" className={`gen-trigger gen-trigger--${variant}`} onClick={() => setOpen(true)}>
+      <button
+        type="button"
+        className={TRIGGER_CLASS[variant] ?? TRIGGER_CLASS.ghost}
+        onClick={() => setOpen(true)}
+      >
         {label}
       </button>
 
@@ -120,10 +131,10 @@ export const GenerateButton = ({ variant = 'ghost', label = '✨ Build from prom
             {error && <p className="gen__error">{error}</p>}
 
             <div className="gen__actions">
-              <button type="button" className="gen__cancel" onClick={() => setOpen(false)} disabled={busy}>
+              <button type="button" className="btn btn--ghost" onClick={() => setOpen(false)} disabled={busy}>
                 Cancel
               </button>
-              <button type="button" className="gen__go" onClick={submit} disabled={busy || !prompt.trim()}>
+              <button type="button" className="btn btn--primary" onClick={submit} disabled={busy || !prompt.trim()}>
                 {busy ? 'Generating…' : 'Generate ▷'}
               </button>
             </div>

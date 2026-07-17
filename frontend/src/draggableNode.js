@@ -1,6 +1,6 @@
 // draggableNode.js
 
-export const DraggableNode = ({ type, label, icon, category }) => {
+export const DraggableNode = ({ type, label, icon, category, blurb }) => {
     const onDragStart = (event, nodeType) => {
       const appData = { nodeType }
       event.target.style.cursor = 'grabbing';
@@ -17,7 +17,10 @@ export const DraggableNode = ({ type, label, icon, category }) => {
         draggable
       >
         {icon ? <span className="draggable-node__icon">{icon}</span> : null}
-        <span className="draggable-node__label">{label}</span>
+        <span className="draggable-node__text">
+          <span className="draggable-node__label">{label}</span>
+          {blurb ? <span className="draggable-node__blurb">{blurb}</span> : null}
+        </span>
       </div>
     );
   };

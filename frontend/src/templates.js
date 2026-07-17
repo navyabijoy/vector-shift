@@ -3,8 +3,6 @@
 // blank canvas. Each template is real nodes + edges the run engine executes —
 // pick one, hit Run, watch data flow through it.
 
-import { MarkerType } from 'reactflow';
-
 // Match the node shape the canvas builds on drop: data carries `id`, `nodeType`,
 // and the field values the backend reads.
 const node = (id, type, position, fields = {}) => ({
@@ -15,16 +13,14 @@ const node = (id, type, position, fields = {}) => ({
 });
 
 // Match the edge shape store.onConnect produces. Handle ids are prefixed with
-// their node id, exactly as React Flow renders them.
+// their node id, exactly as React Flow renders them. Topology only — ui.js
+// styles every edge on render, whatever made it.
 const edge = (source, sourceHandle, target, targetHandle) => ({
   id: `${source}.${sourceHandle}->${target}.${targetHandle}`,
   source,
   target,
   sourceHandle: `${source}-${sourceHandle}`,
   targetHandle: `${target}-${targetHandle}`,
-  type: 'smoothstep',
-  animated: true,
-  markerEnd: { type: MarkerType.Arrow, height: '20px', width: '20px' },
 });
 
 // Input → Text → LLM → Output, the canonical prompt chain.

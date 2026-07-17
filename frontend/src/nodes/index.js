@@ -1,7 +1,7 @@
 // nodes/index.js
 // Turns the declarative configs into the `nodeTypes` map React Flow wants.
-// ui.js and toolbar.js both read from here, so a node added to nodeConfigs.js
-// shows up on the canvas and in the toolbar with no further wiring.
+// ui.js and sidebar.js both read from here, so a node added to nodeConfigs.js
+// shows up on the canvas and in the palette with no further wiring.
 
 import { BaseNode } from './BaseNode';
 import { NODE_CONFIGS, getNodeDefaults } from './nodeConfigs';
