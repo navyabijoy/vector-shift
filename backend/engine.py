@@ -4,7 +4,7 @@ The parse endpoint answers "is this graph valid?". This module answers the
 question a *product* asks: "what does this graph actually produce?". It walks
 the nodes in topological order and runs each one for real — Input nodes emit a
 value, Text nodes substitute their {{variables}} from upstream, the LLM node
-makes a real Claude call, Output nodes collect the result.
+makes a real OpenRouter call, Output nodes collect the result.
 
 Every node runs behind a guard: a node that raises records an error on itself
 and yields an empty output rather than taking the whole run down. The LLM node
