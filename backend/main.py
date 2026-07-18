@@ -1,3 +1,4 @@
+import os
 import uuid
 from collections import deque
 from typing import Optional
@@ -11,11 +12,14 @@ import generate
 
 app = FastAPI(title='VectorShift Pipeline API')
 
-# The frontend is served from a different origin (:3000) than this API (:8000),
-# so without CORS the browser refuses the request before it ever reaches us.
+BASE_URL = os.getenv('BASE_URL', 'http://localhost:8000')
+
+_dev_origins = ['http://localhost:3000', 'http://127.0.0.1:3000']
+_extra_origins = [origin.strip() for origin in os.getenv('FRONTEND_URL', '').split(',') if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['http://localhost:3000', 'http://127.0.0.1:3000'],
+    allow_origins=_dev_origins + _extra_origins,
     allow_methods=['*'],
     allow_headers=['*'],
 )
@@ -166,7 +170,7 @@ def save_pipeline(pipeline: Pipeline) -> SavedPipeline:
         'nodes': [node.model_dump() for node in pipeline.nodes],
         'edges': [edge.model_dump() for edge in pipeline.edges],
     }
-    return SavedPipeline(id=pipeline_id, endpoint=f'/pipelines/{pipeline_id}/run')
+    return SavedPipeline(id=pipeline_id, endpoint=f'{BASE_URL}/pipelines/{pipeline_id}/run')
 
 
 @app.post('/pipelines/{pipeline_id}/run')
