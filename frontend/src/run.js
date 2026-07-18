@@ -93,7 +93,7 @@ export const RunPanel = () => {
   };
 
   const snippet = saved
-    ? `curl -X POST ${API_URL}${saved.endpoint} \\
+    ? `curl -X POST ${saved.endpoint} \\
   -H 'Content-Type: application/json' \\
   -d '${JSON.stringify({ inputs: values })}'`
     : '';
