@@ -72,25 +72,31 @@
 
 .run__field {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-3);
   margin-bottom: var(--space-2);
 }
 
 .run__field-name {
   min-width: 96px;
+  padding-top: var(--space-2);
   font-size: 12px;
   font-weight: 600;
   color: var(--color-text);
 }
 
-.run__field input {
+.run__field-input {
   flex: 1;
+  min-width: 0;
   padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-sm);
   font-size: 13px;
   font-family: var(--font-sans);
+  line-height: 1.5;
+  resize: vertical;
+  max-height: 40vh;
+  overflow-y: auto;
 }
 
 .run__go {
@@ -163,6 +169,33 @@
 .run__deploy {
   padding-top: var(--space-4);
   border-top: 1px solid var(--color-border);
+}
+
+.run__toggle {
+  display: inline-flex;
+  margin-bottom: var(--space-2);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.run__toggle-btn {
+  padding: var(--space-1) var(--space-3);
+  border: none;
+  background: var(--color-surface);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.run__toggle-btn + .run__toggle-btn {
+  border-left: 1px solid var(--color-border-strong);
+}
+
+.run__toggle-btn--active {
+  background: var(--color-bg);
+  color: var(--color-text);
 }
 
 .run__snippet {

@@ -36,6 +36,7 @@ export const RunPanel = () => {
   const [error, setError] = useState(null);
   const [saved, setSaved] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [snippetMode, setSnippetMode] = useState('template');
 
   // Input nodes are the pipeline's parameters — one field each, keyed by name.
   const inputNames = useMemo(
@@ -92,10 +93,15 @@ export const RunPanel = () => {
     }
   };
 
+  const snippetInputs =
+    snippetMode === 'template'
+      ? Object.fromEntries(inputNames.map((name) => [name, `<${name}>`]))
+      : values;
+  const body = JSON.stringify({ inputs: snippetInputs }).replace(/'/g, `'\\''`);
   const snippet = saved
     ? `curl -X POST ${saved.endpoint} \\
   -H 'Content-Type: application/json' \\
-  -d '${JSON.stringify({ inputs: values })}'`
+  -d '${body}'`
     : '';
 
   const copySnippet = async () => {
@@ -145,11 +151,16 @@ export const RunPanel = () => {
                   inputNames.map((name) => (
                     <label key={name} className="run__field">
                       <span className="run__field-name">{name}</span>
-                      <input
-                        type="text"
+                      <textarea
+                        className="run__field-input"
+                        rows={1}
                         value={values[name] ?? ''}
                         placeholder={`value for ${name}`}
                         onChange={(event) => setValue(name, event.target.value)}
+                        onInput={(event) => {
+                          event.target.style.height = 'auto';
+                          event.target.style.height = `${event.target.scrollHeight}px`;
+                        }}
                       />
                     </label>
                   ))
@@ -211,6 +222,30 @@ export const RunPanel = () => {
                         <p className="run__hint">
                           Deployed. Call it from your own code, a script, or a cron:
                         </p>
+                        <div className="run__toggle" role="group" aria-label="Snippet body">
+                          <button
+                            type="button"
+                            className={`run__toggle-btn${snippetMode === 'template' ? ' run__toggle-btn--active' : ''}`}
+                            aria-pressed={snippetMode === 'template'}
+                            onClick={() => {
+                              setSnippetMode('template');
+                              setCopied(false);
+                            }}
+                          >
+                            Template
+                          </button>
+                          <button
+                            type="button"
+                            className={`run__toggle-btn${snippetMode === 'values' ? ' run__toggle-btn--active' : ''}`}
+                            aria-pressed={snippetMode === 'values'}
+                            onClick={() => {
+                              setSnippetMode('values');
+                              setCopied(false);
+                            }}
+                          >
+                            Current values
+                          </button>
+                        </div>
                         <pre className="run__snippet">{snippet}</pre>
                         <button type="button" className="btn btn--secondary" onClick={copySnippet}>
                           {copied ? 'Copied ✓' : 'Copy curl'}
