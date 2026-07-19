@@ -87,15 +87,21 @@ Rules:
 - Every variable referenced by an edge into a text node MUST appear as
   {{{{variable}}}} inside that node's text.
 - Prefer this pattern: Input -> Text (prompt) -> LLM -> Output.
+- A text node that builds an LLM prompt MUST instruct the model to return ONLY
+  the requested result, with no preamble, labels, restating of the input, or
+  commentary. Write "Output only the X." rather than a bare "Do X:". This
+  matters most in a chain, where one step's output becomes the next step's
+  input — narration like "The text states that..." gets carried forward and
+  compounds.
 - For a MULTI-STEP task (e.g. "summarize AND translate"), use one LLM node per
   step and chain them: each step's LLM response feeds the next step's Text
   prompt via a {{{{variable}}}}. Example — write then translate:
   {{
     "nodes": [
       {{"id": "in", "type": "customInput", "inputName": "topic"}},
-      {{"id": "t1", "type": "text", "text": "Write a poem about {{{{topic}}}}"}},
+      {{"id": "t1", "type": "text", "text": "Write a poem about {{{{topic}}}}. Output only the poem."}},
       {{"id": "m1", "type": "llm"}},
-      {{"id": "t2", "type": "text", "text": "Translate to Spanish:\\n{{{{poem}}}}"}},
+      {{"id": "t2", "type": "text", "text": "Translate the following to Spanish. Output only the translation, nothing else:\\n\\n{{{{poem}}}}"}},
       {{"id": "m2", "type": "llm"}},
       {{"id": "out", "type": "customOutput", "outputName": "translated"}}
     ],

@@ -67,9 +67,6 @@ def is_dag(nodes: list[Node], edges: list[Edge]) -> bool:
     in_degree: dict[str, int] = {node_id: 0 for node_id in node_ids}
 
     for edge in edges:
-        # An edge whose endpoints aren't both on the canvas can't form a cycle
-        # among the nodes we have. It still counts toward num_edges; it just
-        # doesn't participate in the graph we walk here.
         if edge.source not in node_ids or edge.target not in node_ids:
             continue
         successors[edge.source].append(edge.target)

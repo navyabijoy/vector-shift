@@ -27,7 +27,7 @@ const edge = (source, sourceHandle, target, targetHandle) => ({
 const summarize = () => ({
   nodes: [
     node('customInput-1', 'customInput', { x: 40, y: 200 }, { inputName: 'text', inputType: 'Text' }),
-    node('text-1', 'text', { x: 320, y: 180 }, { text: 'Summarize the following in one sentence:\n\n{{text}}' }),
+    node('text-1', 'text', { x: 320, y: 180 }, { text: 'Summarize the following in one sentence. Output only the summary, with no preamble or restating of the input:\n\n{{text}}' }),
     node('llm-1', 'llm', { x: 700, y: 190 }),
     node('customOutput-1', 'customOutput', { x: 980, y: 200 }, { outputName: 'summary', outputType: 'Text' }),
   ],
@@ -43,7 +43,7 @@ const translate = () => ({
   nodes: [
     node('customInput-1', 'customInput', { x: 40, y: 120 }, { inputName: 'text', inputType: 'Text' }),
     node('customInput-2', 'customInput', { x: 40, y: 300 }, { inputName: 'language', inputType: 'Text' }),
-    node('text-1', 'text', { x: 340, y: 190 }, { text: 'Translate this into {{language}}:\n\n{{text}}' }),
+    node('text-1', 'text', { x: 340, y: 190 }, { text: 'Translate the following into {{language}}. Output only the translation, nothing else:\n\n{{text}}' }),
     node('llm-1', 'llm', { x: 720, y: 200 }),
     node('customOutput-1', 'customOutput', { x: 1000, y: 210 }, { outputName: 'translation', outputType: 'Text' }),
   ],
