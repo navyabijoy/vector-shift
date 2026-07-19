@@ -52,7 +52,6 @@ export const NODE_CONFIGS = {
     blurb: 'Prompt a model',
     description: 'Runs a prompt through a language model.',
     handles: [
-      // Note: no manual `top: 200/3 %` offsets — BaseNode spaces these itself.
       { id: 'system', type: 'target', position: 'left', label: 'system' },
       { id: 'prompt', type: 'target', position: 'left', label: 'prompt' },
       { id: 'response', type: 'source', position: 'right', label: 'response' },

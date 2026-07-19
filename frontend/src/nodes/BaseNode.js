@@ -4,7 +4,7 @@
 // handles, and writes field edits back to the store.
 
 import { useEffect } from 'react';
-import { Handle, Position } from 'reactflow';
+import { Handle, Position, useUpdateNodeInternals } from 'reactflow';
 import { useStore } from '../store';
 import { NodeField } from './NodeField';
 import './node.css';
@@ -41,6 +41,7 @@ const groupByPosition = (handles) =>
 export const BaseNode = ({ id, data, config }) => {
   const updateNodeField = useStore((state) => state.updateNodeField);
   const pruneEdgesForNode = useStore((state) => state.pruneEdgesForNode);
+  const updateNodeInternals = useUpdateNodeInternals();
 
   const { title, icon, description, fields = [], handles = [], render, autoSize } = config;
 
@@ -56,9 +57,16 @@ export const BaseNode = ({ id, data, config }) => {
   useEffect(() => {
     const validHandleIds = handleKey === '' ? [] : handleKey.split('|').map((handleId) => `${id}-${handleId}`);
     pruneEdgesForNode(id, validHandleIds);
-  }, [id, handleKey, pruneEdgesForNode]);
+    // React Flow caches each handle's measured position; re-measure so edges
+    // follow the handles when the set changes rather than anchoring to stale spots.
+    updateNodeInternals(id);
+  }, [id, handleKey, pruneEdgesForNode, updateNodeInternals]);
 
   const autoWidth = autoSize ? autoWidthFor(data?.[autoSize]) : undefined;
+
+  useEffect(() => {
+    updateNodeInternals(id);
+  }, [id, autoWidth, updateNodeInternals]);
 
   return (
     <div
